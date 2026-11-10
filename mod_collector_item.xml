@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+	<name>mod_collector_item</name>
+	<author>Philippe Ousset</author>
+	<creationDate>2026-11-10</creationDate>
+	<copyright>Copyright (C) 2010 - 2026 Philippe Ousset. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>steevo@steevo.fr</authorEmail>
+	<authorUrl>www.steevo.fr</authorUrl>
+	<version>1.0.0</version>
+	<description>MOD_COLLECTOR_ITEM_XML_DESCRIPTION</description>
+	<namespace path="src">Steevo\Module\CollectorItem</namespace>
+	<files>
+		<folder module="mod_collector_item">services</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+	</files>
+	<media destination="mod_collector_item" folder="media">
+		<folder>js</folder>
+	</media>
+	<languages folder="language">
+		<language tag="fr-FR">fr-FR/mod_collector_item.ini</language>
+		<language tag="fr-FR">fr-FR/mod_collector_item.sys.ini</language>
+		<language tag="en-GB">en-GB/mod_collector_item.ini</language>
+		<language tag="en-GB">en-GB/mod_collector_item.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic" addfieldprefix="Steevo\Module\CollectorItem\Site\Field">
+				<field
+					name="collection"
+					type="collectorcollection"
+					label="MOD_COLLECTOR_ITEM_FIELD_COLLECTION_LABEL"
+					required="true"
+					filter="integer"
+					>
+					<option value="">MOD_COLLECTOR_ITEM_FIELD_COLLECTION_SELECT</option>
+				</field>
+
+				<field
+					name="mode"
+					type="radio"
+					label="MOD_COLLECTOR_ITEM_FIELD_MODE_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_MODE_DESC"
+					layout="joomla.form.field.radio.switcher"
+					default="random"
+					>
+					<option value="random">MOD_COLLECTOR_ITEM_FIELD_MODE_RANDOM</option>
+					<option value="item">MOD_COLLECTOR_ITEM_FIELD_MODE_ITEM</option>
+				</field>
+
+				<field
+					name="item"
+					type="collectoritem"
+					label="MOD_COLLECTOR_ITEM_FIELD_ITEM_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_ITEM_DESC"
+					showon="mode:item"
+					filter="integer"
+				/>
+
+				<field
+					name="period"
+					type="list"
+					label="MOD_COLLECTOR_ITEM_FIELD_PERIOD_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_PERIOD_DESC"
+					showon="mode:random"
+					default="display"
+					>
+					<option value="display">MOD_COLLECTOR_ITEM_FIELD_PERIOD_DISPLAY</option>
+					<option value="hour">MOD_COLLECTOR_ITEM_FIELD_PERIOD_HOUR</option>
+					<option value="day">MOD_COLLECTOR_ITEM_FIELD_PERIOD_DAY</option>
+					<option value="week">MOD_COLLECTOR_ITEM_FIELD_PERIOD_WEEK</option>
+				</field>
+
+				<field
+					name="required_field"
+					type="collectorfield"
+					label="MOD_COLLECTOR_ITEM_FIELD_REQUIRED_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_REQUIRED_DESC"
+					showon="mode:random"
+				/>
+			</fieldset>
+
+			<fieldset name="display" label="MOD_COLLECTOR_ITEM_FIELDSET_DISPLAY" addfieldprefix="Steevo\Module\CollectorItem\Site\Field">
+				<field
+					name="tags"
+					type="collectortags"
+					label="MOD_COLLECTOR_ITEM_TAGS"
+				/>
+
+				<field
+					name="content"
+					type="editor"
+					label="MOD_COLLECTOR_ITEM_FIELD_CONTENT_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_CONTENT_DESC"
+					editor="codemirror|none"
+					syntax="html"
+					buttons="false"
+					height="350"
+					filter="raw"
+				/>
+
+				<field
+					name="css"
+					type="editor"
+					label="MOD_COLLECTOR_ITEM_FIELD_CSS_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_CSS_DESC"
+					editor="codemirror|none"
+					syntax="css"
+					buttons="false"
+					height="200"
+					filter="raw"
+				/>
+
+				<field
+					name="preview"
+					type="collectorpreview"
+					label="MOD_COLLECTOR_ITEM_PREVIEW"
+				/>
+			</fieldset>
+
+			<fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					class="form-select"
+					validate="moduleLayout"
+				/>
+
+				<field
+					name="moduleclass_sfx"
+					type="textarea"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					rows="3"
+					validate="CssIdentifier"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
