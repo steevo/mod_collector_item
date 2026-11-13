@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>steevo@steevo.fr</authorEmail>
 	<authorUrl>www.steevo.fr</authorUrl>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<description>MOD_COLLECTOR_ITEM_XML_DESCRIPTION</description>
 	<namespace path="src">Steevo\Module\CollectorItem</namespace>
 	<files>
@@ -43,11 +43,26 @@
 					type="radio"
 					label="MOD_COLLECTOR_ITEM_FIELD_MODE_LABEL"
 					description="MOD_COLLECTOR_ITEM_FIELD_MODE_DESC"
-					layout="joomla.form.field.radio.switcher"
+					layout="joomla.form.field.radio.buttons"
 					default="random"
 					>
 					<option value="random">MOD_COLLECTOR_ITEM_FIELD_MODE_RANDOM</option>
+					<option value="latest">MOD_COLLECTOR_ITEM_FIELD_MODE_LATEST</option>
 					<option value="item">MOD_COLLECTOR_ITEM_FIELD_MODE_ITEM</option>
+				</field>
+
+				<field
+					name="latest_by"
+					type="list"
+					label="MOD_COLLECTOR_ITEM_FIELD_LATEST_BY_LABEL"
+					description="MOD_COLLECTOR_ITEM_FIELD_LATEST_BY_DESC"
+					showon="mode:latest"
+					default="ordering"
+					validate="options"
+					>
+					<option value="ordering">MOD_COLLECTOR_ITEM_FIELD_LATEST_BY_ORDERING</option>
+					<option value="created">MOD_COLLECTOR_ITEM_FIELD_LATEST_BY_CREATED</option>
+					<option value="publish_up">MOD_COLLECTOR_ITEM_FIELD_LATEST_BY_PUBLISH_UP</option>
 				</field>
 
 				<field
@@ -78,7 +93,7 @@
 					type="collectorfield"
 					label="MOD_COLLECTOR_ITEM_FIELD_REQUIRED_LABEL"
 					description="MOD_COLLECTOR_ITEM_FIELD_REQUIRED_DESC"
-					showon="mode:random"
+					showon="mode:random,latest"
 				/>
 			</fieldset>
 

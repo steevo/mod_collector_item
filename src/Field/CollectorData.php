@@ -17,6 +17,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\Database\DatabaseInterface;
 use Steevo\Component\Collector\Administrator\Helper\CollectorTemplateHelper;
+use Steevo\Module\CollectorItem\Site\Helper\ItemHelper;
 
 /**
  * Données de l'édition du module (collections, objets, champs, balises), envoyées une seule fois
@@ -42,7 +43,21 @@ abstract class CollectorData
         $collections = [];
 
         foreach ($db->setQuery($db->getQuery(true)->select('id')->from('#__collector'))->loadColumn() as $id) {
-            $collections[(int) $id] = ['fields' => [], 'tags' => []];
+            $collections[(int) $id] = ['fields' => [], 'tags' => [], 'latest' => []];
+
+            // aperçu du mode « le plus récent » : l'objet publié retenu par chaque critère
+            foreach (ItemHelper::LATEST_ORDERS as $by => $order) {
+                $collections[(int) $id]['latest'][$by] = (int) $db->setQuery(
+                    $db->getQuery(true)
+                        ->select('i.id')
+                        ->from($db->quoteName('#__collector_items', 'i'))
+                        ->where('i.collection = ' . (int) $id)
+                        ->where('i.state = 1')
+                        ->order($order),
+                    0,
+                    1
+                )->loadResult();
+            }
 
             foreach (CollectorTemplateHelper::getTags((int) $id, CollectorTemplateHelper::CLIENT_ITEM) as [$tag, $label]) {
                 $collections[(int) $id]['tags'][] = ['tag' => $tag, 'label' => $label];

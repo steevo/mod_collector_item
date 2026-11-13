@@ -34,6 +34,18 @@ class ItemHelper implements DatabaseAwareInterface
     protected const PERIODS = ['hour' => 'YmdH', 'day' => 'Ymd', 'week' => 'oW'];
 
     /**
+     * Mode « le plus récent » : critère → tri (le premier objet est retenu).
+     *  - ordering   : le dernier dans l'ordre de la collection (numéro de bulletin, de souscription…)
+     *  - created    : le dernier créé
+     *  - publish_up : le dernier publié (date de début de publication, sinon de création)
+     */
+    public const LATEST_ORDERS = [
+        'ordering'   => 'i.ordering DESC, i.id DESC',
+        'created'    => 'i.created DESC, i.id DESC',
+        'publish_up' => 'COALESCE(i.publish_up, i.created) DESC, i.id DESC',
+    ];
+
+    /**
      * HTML du module, ou null s'il n'y a rien à afficher.
      *
      * @return  object|null  {html, css, collection, item}
@@ -51,9 +63,11 @@ class ItemHelper implements DatabaseAwareInterface
         $app->getLanguage()->load('com_collector', JPATH_SITE);
 
         $fields = $this->getFields((int) $collection->id);
-        $item   = $params->get('mode', 'random') === 'item'
-            ? $this->getItem($collection, $fields, $app, (int) $params->get('item'))
-            : $this->getRandomItem($collection, $fields, $app, $params, $moduleId);
+        $item   = match ((string) $params->get('mode', 'random')) {
+            'item'   => $this->getItem($collection, $fields, $app, (int) $params->get('item')),
+            'latest' => $this->getLatestItem($collection, $fields, $app, $params),
+            default  => $this->getRandomItem($collection, $fields, $app, $params, $moduleId),
+        };
 
         if (!$item) {
             return null;
@@ -192,18 +206,7 @@ class ItemHelper implements DatabaseAwareInterface
         $db    = $this->getDatabase();
         $query = $this->baseQuery($collection, $app);
 
-        // seulement les objets dont un champ est rempli (par exemple une photo)
-        $required = (string) $params->get('required_field', '');
-
-        if ($required !== '') {
-            foreach ($fields as $field) {
-                if (($field->_field->tablecolumn ?? '') === $required) {
-                    $column = $db->quoteName('h.' . $required);
-                    $query->where($column . ' IS NOT NULL')->where($column . ' <> ' . $db->quote(''));
-                    break;
-                }
-            }
-        }
+        $this->whereRequired($query, $fields, $params);
 
         $count = (int) $db->setQuery((clone $query)->select('COUNT(*)'))->loadResult();
 
@@ -219,6 +222,41 @@ class ItemHelper implements DatabaseAwareInterface
             : random_int(0, $count - 1);
 
         return $this->load($query->order('i.id'), $fields, $offset);
+    }
+
+    /**
+     * Objet le plus récent de la collection, selon le critère choisi (voir LATEST_ORDERS).
+     */
+    protected function getLatestItem(object $collection, array $fields, CMSApplicationInterface $app, Registry $params): ?object
+    {
+        $query = $this->baseQuery($collection, $app);
+        $by    = (string) $params->get('latest_by', 'ordering');
+
+        $this->whereRequired($query, $fields, $params);
+
+        return $this->load($query->order(static::LATEST_ORDERS[$by] ?? static::LATEST_ORDERS['ordering']), $fields);
+    }
+
+    /**
+     * Seulement les objets dont un champ est rempli (par exemple une photo).
+     */
+    protected function whereRequired(DatabaseQuery $query, array $fields, Registry $params): void
+    {
+        $required = (string) $params->get('required_field', '');
+
+        if ($required === '') {
+            return;
+        }
+
+        $db = $this->getDatabase();
+
+        foreach ($fields as $field) {
+            if (($field->_field->tablecolumn ?? '') === $required) {
+                $column = $db->quoteName('h.' . $required);
+                $query->where($column . ' IS NOT NULL')->where($column . ' <> ' . $db->quote(''));
+                break;
+            }
+        }
     }
 
     /**

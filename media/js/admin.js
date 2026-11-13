@@ -227,7 +227,19 @@
 			const publies = objets.filter(({ published }) => published);
 			objetTire = publies.length ? String(publies[Math.floor(Math.random() * publies.length)].id) : '';
 		};
-		const objetApercu = () => (mode() === 'item' ? (choixObjet ? choixObjet.value : '') : objetTire);
+		// mode « le plus récent » : l'objet retenu par le critère choisi, calculé par le serveur
+		const choixRecent = document.getElementById('jform_params_latest_by');
+		const objetRecent = () => {
+			const plusRecents = infos().latest || {};
+			const id = plusRecents[choixRecent ? choixRecent.value : 'ordering'];
+			return id ? String(id) : '';
+		};
+		const objetApercu = () => {
+			if (mode() === 'item') {
+				return choixObjet ? choixObjet.value : '';
+			}
+			return mode() === 'latest' ? objetRecent() : objetTire;
+		};
 
 		const ajusterCadre = () => {
 			try {
@@ -357,6 +369,9 @@
 			choixObjet.addEventListener('change', () => apercu());
 		}
 		document.querySelectorAll('input[name="jform[params][mode]"]').forEach(radio => radio.addEventListener('change', () => apercu()));
+		if (choixRecent) {
+			choixRecent.addEventListener('change', () => apercu());
+		}
 
 		actualiser();
 
