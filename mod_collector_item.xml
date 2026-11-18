@@ -24,6 +24,12 @@
 		<language tag="fr-FR">fr-FR/mod_collector_item.sys.ini</language>
 		<language tag="en-GB">en-GB/mod_collector_item.ini</language>
 		<language tag="en-GB">en-GB/mod_collector_item.sys.ini</language>
+		<language tag="de-DE">de-DE/mod_collector_item.ini</language>
+		<language tag="de-DE">de-DE/mod_collector_item.sys.ini</language>
+		<language tag="es-ES">es-ES/mod_collector_item.ini</language>
+		<language tag="es-ES">es-ES/mod_collector_item.sys.ini</language>
+		<language tag="pl-PL">pl-PL/mod_collector_item.ini</language>
+		<language tag="pl-PL">pl-PL/mod_collector_item.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
